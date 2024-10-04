@@ -1,0 +1,37 @@
+<odoo>
+    <!-- Overtime 1 Salary Rule -->
+    <record id="salary_rule_overtime_1" model="hr.salary.rule">
+        <field name="name">Overtime@1.5</field>
+        <field name="code">OT1</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="sequence">2</field>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+        <![CDATA[
+result = (contract.wage / 192) * payslip.overtime_hours_weekdays * 1.5
+        ]]>
+    </field>
+        <field name="appears_on_payslip">True</field>
+         <field name="struct_id" ref="l10n_ke_hr_payroll.hr_payroll_structure_ken_employee_salary"/>
+    </record>
+
+    <!-- Overtime 2 Salary Rule -->
+    <record id="salary_rule_overtime_2" model="hr.salary.rule">
+        <field name="name">Overtime@2.0</field>
+        <field name="code">OT2</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="sequence">3</field>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+        <![CDATA[
+result = (contract.wage / 192) * payslip.overtime_hours_sunday_holiday * 2
+        ]]>
+        </field>
+        <field name="appears_on_payslip">True</field>
+        <field name="struct_id" ref="l10n_ke_hr_payroll.hr_payroll_structure_ken_employee_salary"/>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,10 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_monthly.bank.report.wizard,access_monthly.bank.report.wizard,model_monthly_bank_report_wizard,,1,1,1,1
+access_download.monthly.bank.report,access_download.monthly.bank.report,model_download_monthly_bank_report,,1,1,1,1
+
+access_p10.report.wizard,access_p10.report.wizard,model_p10_report_wizard,,1,1,1,1
+access_download.p10.report,access_download.p10.report,model_download_p10_report,,1,1,1,1
+
+access_p10.m.report.wizard,access_p10.m.report.wizard,model_p10_m_report_wizard,,1,1,1,1
+access_download.p10.m.report,access_download.p10.m.report,model_download_m_p10_report,,1,1,1,1
+

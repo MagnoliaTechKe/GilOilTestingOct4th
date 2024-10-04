@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_payslip_lang_inh" inherit_id="hr_payroll.report_payslip_lang">
+        <t t-call="web.html_container" position="replace">
+            <div class="page">
+                <t t-call="web.basic_layout">
+                    <t t-set="total_payslips" t-value="len(docs)"/>
+                    <!-- Case 1: If there's only one record, print it full page -->
+                    <t t-if="total_payslips == 1">
+                        <div class="row" style="display: flex; justify-content: center; page-break-inside: avoid;">
+                            <div class="col-full" style="width: 100%; border: 1px solid #ddd; padding: 10px; box-sizing: border-box;">
+                                <!-- Print the single payslip -->
+                                <t t-foreach="docs" t-as="payslip">
+                                    <span style="font-size: 11.5px;">
+                                        <b t-field="payslip.company_id.name"/>
+                                    </span>
+                                    <br></br>
+                                    <span>
+                                        <span style="font-size: 11.5px;">
+                                            <b>PAYSLIP
+                                                :
+                                                <span t-esc="payslip.name.split(' ')[5] if len(payslip.name.split(' ')) > 5 else ''"/>
+                                                <span t-esc="payslip.name.split(' ')[6] if len(payslip.name.split(' ')) > 6 else ''"/>
+                                            </b>
+                                        </span>
+                                    </span>
+                                    <table name="employee-infos" id="employee_info_table_1" class="table table-sm"
+                                           style="border-top: 1px solid black; font-size:11.5px;border-collapse: collapse;">
+                                        <tr id="employee_info_line_1" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>Name:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.name">John Smith</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_2" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>Department:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.department_id.name">Transport</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_3" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>Employee No:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.registration_number">900567</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_4" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>PIN:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.l10n_ke_kra_pin">A0055182625A</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_5" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>ID No:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.identification_id">221100491</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_6" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>NSSF:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.l10n_ke_nssf_number">2362075</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_7" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>NHIF:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.l10n_ke_nhif_number">2326075</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_8" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>Bank Name:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.bank_account_id.bank_id">Equity Bank</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_9" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>Bank Branch:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.bank_account_id.bank_branch">Equity Bank Branch</span>
+                                            </td>
+                                        </tr>
+                                        <tr id="employee_info_line_10" style="border: none;">
+                                            <td style="border: none;">
+                                                <strong>Bank A/C No:</strong>
+                                            </td>
+                                            <td style="border: none;">
+                                                <span t-field="payslip.employee_id.bank_account_id.acc_number">0950182425488</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-sm" style="font-size:11.5px;" t-if="not payslip.struct_id.hide_basic_on_pdf">
+                                        <thead>
+                                            <tr style="border-top: 1px solid black;">
+                                                <th style="text-align:left">Description</th>
+                                                <th></th>
+                                                <th></th>
+                                                <th style="text-align:right">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody t-if="not payslip.struct_id.hide_basic_on_pdf" class="no-border">
+                                            <t id="payslip_lines">
+                                                <span t-foreach="payslip.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                                    <t t-set="line_styling" t-value="line.get_payslip_styling_dict()"/>
+                                                    <t t-set="line_style"/>
+                                                    <t t-set="line_class"/>
+                                                    <t t-if="line.code in line_styling">
+                                                        <t t-set="line_class" t-value="line_styling[line.code]['line_class']"/>
+                                                    </t>
+                                                    <tr t-att-class="line_class" t-att-style="line_style" id="line_display">
+                                                        <td id="payslip_line_name">
+                                                            <span t-field="line.name"
+                                                                  t-att-style="'font-weight:bold; text-decoration:underline;' if line.code in ['GROSS', 'TOTAL_DED','NET'] else ''"/>
+                                                        </td>
+                                                        <td id="payslip_line_rate"></td>
+                                                        <td id="payslip_line_quantity">
+                                                            <span t-if="line.quantity > 1" t-esc="line.quantity"/>
+                                                        </td>
+                                                        <td id="payslip_line_total" class="text-end">
+                                                            <span t-esc="line.total"
+                                                                  t-options='{"widget": "monetary", "display_currency": payslip.company_id.currency_id}'
+                                                                  t-att-style="'color:#875A7B;' if line.total &lt; 0 else ('font-weight:bold; text-decoration:underline;' if line.code in ['GROSS', 'TOTAL_DED','NET'] else '')"/>
+                                                        </td>
+                                                    </tr>
+                                                </span>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Case 2: If there are multiple records, print in two columns -->
+                    <t t-else="">
+                        <!-- Loop through the records, two at a time -->
+                        <t t-foreach="range(0, total_payslips, 2)" t-as="index">
+                            <div class="row" style="display: flex; justify-content: space-between; page-break-inside: avoid;">
+                                <!-- Left column (first record) -->
+                                <div class="col-half" style="width: 48%; border: 1px solid #ddd; padding: 10px; box-sizing: border-box; ">
+                                    <t t-if="index &lt; total_payslips">
+                                        <t t-foreach="docs[index:index+1]" t-as="payslip">
+                                            <span style="font-size: 11.5px; margin-left: -10px">
+                                                <b t-field="payslip.company_id.name"/>
+                                            </span>
+                                            <br></br>
+                                            <span>
+                                                <span style="font-size: 11.5px; margin-left: -10px">
+                                                    <b>PAYSLIP
+                                                        :
+                                                        <span t-esc="payslip.name.split(' ')[5] if len(payslip.name.split(' ')) > 5 else ''"/>
+                                                        <span t-esc="payslip.name.split(' ')[6] if len(payslip.name.split(' ')) > 6 else ''"/>
+                                                    </b>
+                                                </span>
+                                            </span>
+                                            <table name="employee-infos" id="employee_info_table_1" class="table table-sm"
+                                                   style="border-top: 1px solid black; font-size:11.5px;border-collapse: collapse; margin-left: -10px">
+                                                <tr id="employee_info_line_1" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Name:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.name">John Smith</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_2" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Department:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.department_id.name">Transport</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_3" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Employee No:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.registration_number">900567</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_4" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>PIN:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.l10n_ke_kra_pin">A0055182625A</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_5" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>ID No:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.identification_id">221100491</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_6" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>NSSF:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.l10n_ke_nssf_number">2362075</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_7" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>NHIF:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.l10n_ke_nhif_number">2326075</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_8" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Bank Name:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.bank_account_id.bank_id">Equity Bank</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_9" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Bank Branch:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.bank_account_id.bank_branch">Equity Bank Branch</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_10" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Bank A/C No:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.bank_account_id.acc_number">0950182425488</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table table-sm" style="font-size:11.5px; margin-left: -10px"
+                                                   t-if="not payslip.struct_id.hide_basic_on_pdf">
+                                                <thead>
+                                                    <tr style="border-top: 1px solid black;">
+                                                        <th style="text-align:left">Description</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th style="text-align:right">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody t-if="not payslip.struct_id.hide_basic_on_pdf" class="no-border">
+                                                    <t id="payslip_lines">
+                                                        <span t-foreach="payslip.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                                            <t t-set="line_styling" t-value="line.get_payslip_styling_dict()"/>
+                                                            <t t-set="line_style"/>
+                                                            <t t-set="line_class"/>
+                                                            <t t-if="line.code in line_styling">
+                                                                <t t-set="line_class" t-value="line_styling[line.code]['line_class']"/>
+                                                            </t>
+                                                            <tr t-att-class="line_class" t-att-style="line_style" id="line_display">
+                                                                <td id="payslip_line_name">
+                                                                    <span t-field="line.name"
+                                                                          t-att-style="'font-weight:bold; text-decoration:underline;' if line.code in ['GROSS', 'TOTAL_DED','NET'] else ''"/>
+                                                                </td>
+                                                                <td id="payslip_line_rate"></td>
+                                                                <td id="payslip_line_quantity">
+                                                                    <span t-if="line.quantity > 1" t-esc="line.quantity"/>
+                                                                </td>
+                                                                <td id="payslip_line_total" class="text-end">
+                                                                    <span t-esc="line.total"
+                                                                          t-options='{"widget": "monetary", "display_currency": payslip.company_id.currency_id}'
+                                                                          t-att-style="'color:#875A7B;' if line.total &lt; 0 else ('font-weight:bold; text-decoration:underline;' if line.code in ['GROSS', 'TOTAL_DED','NET'] else '')"/>
+                                                                </td>
+                                                            </tr>
+                                                        </span>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </t>
+                                    </t>
+                                </div>
+                                <!-- Right column (second record, if available) -->
+                                <div class="col-half" style="width: 48%; border: 1px solid #ddd; padding: 10px; box-sizing: border-box;">
+                                    <t t-if="index + 1 &lt; total_payslips">
+                                        <t t-foreach="docs[index+1:index+2]" t-as="payslip">
+                                            <span style="font-size: 11.5px; margin-left:10px">
+                                                <b t-field="payslip.company_id.name"/>
+                                            </span>
+                                            <br></br>
+                                            <span>
+                                                <span style="font-size: 11.5px;margin-left:10px">
+                                                    <b>PAYSLIP
+                                                        :
+                                                        <span t-esc="payslip.name.split(' ')[5] if len(payslip.name.split(' ')) > 5 else ''"/>
+                                                        <span t-esc="payslip.name.split(' ')[6] if len(payslip.name.split(' ')) > 6 else ''"/>
+                                                    </b>
+                                                </span>
+                                            </span>
+                                            <table name="employee-infos" id="employee_info_table_1" class="table table-sm"
+                                                   style="border-top: 1px solid black; font-size:11.5px;border-collapse: collapse; margin-left:10px">
+                                                <tr id="employee_info_line_1" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Name:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.name">John Smith</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_2" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Department:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.department_id.name">Transport</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_3" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Employee No:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.registration_number">900567</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_4" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>PIN:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.l10n_ke_kra_pin">A0055182625A</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_5" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>ID No:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.identification_id">221100491</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_6" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>NSSF:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.l10n_ke_nssf_number">2362075</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_7" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>NHIF:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.l10n_ke_nhif_number">2326075</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_8" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Bank Name:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.bank_account_id.bank_id">Equity Bank</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_9" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Bank Branch:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.bank_account_id.bank_branch">Equity Bank Branch</span>
+                                                    </td>
+                                                </tr>
+                                                <tr id="employee_info_line_10" style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong>Bank A/C No:</strong>
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        <span t-field="payslip.employee_id.bank_account_id.acc_number">0950182425488</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table table-sm" style="font-size:11.5px;margin-left:10px"
+                                                   t-if="not payslip.struct_id.hide_basic_on_pdf">
+                                                <thead>
+                                                    <tr style="border-top: 1px solid black;">
+                                                        <th style="text-align:left">Description</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th style="text-align:right">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody t-if="not payslip.struct_id.hide_basic_on_pdf" class="no-border">
+                                                    <t id="payslip_lines">
+                                                        <span t-foreach="payslip.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                                            <t t-set="line_styling" t-value="line.get_payslip_styling_dict()"/>
+                                                            <t t-set="line_style"/>
+                                                            <t t-set="line_class"/>
+                                                            <t t-if="line.code in line_styling">
+                                                                <t t-set="line_class" t-value="line_styling[line.code]['line_class']"/>
+                                                            </t>
+                                                            <tr t-att-class="line_class" t-att-style="line_style" id="line_display">
+                                                                <td id="payslip_line_name">
+                                                                    <span t-field="line.name"
+                                                                          t-att-style="'font-weight:bold; text-decoration:underline;' if line.code in ['GROSS', 'TOTAL_DED','NET'] else ''"/>
+                                                                </td>
+                                                                <td id="payslip_line_rate"></td>
+                                                                <td id="payslip_line_quantity">
+                                                                    <span t-if="line.quantity > 1" t-esc="line.quantity"/>
+                                                                </td>
+                                                                <td id="payslip_line_total" class="text-end">
+                                                                    <span t-esc="line.total"
+                                                                          t-options='{"widget": "monetary", "display_currency": payslip.company_id.currency_id}'
+                                                                          t-att-style="'color:#875A7B;' if line.total &lt; 0 else ('font-weight:bold; text-decoration:underline;' if line.code in ['GROSS', 'TOTAL_DED','NET'] else '')"/>
+                                                                </td>
+                                                            </tr>
+                                                        </span>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

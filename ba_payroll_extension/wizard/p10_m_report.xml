@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_p10_m_report_wizard" model="ir.ui.view">
+        <field name="name">p10.m.report.wizard.form</field>
+        <field name="model">p10.m.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="P10-M-Report">
+                <group>
+                    <field name="start_date" />
+                    <field name="end_date" />
+                </group>
+                <footer>
+                    <button string="Generate Report" type="object" name="generate_p10_m_report" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="download_p10_m_report" model="ir.ui.view">
+            <field name="name">Download P10 Report</field>
+            <field name="model">download.m.p10.report</field>
+            <field name="arch" type="xml">
+                <form string="Download">
+                    <group>
+                        <field name="name" invisible="1"/>
+                        <h5>Download File: &#160;<field name="exported_excel_file" filename="name" nolabel="1"/></h5>
+                    </group>
+                    <separator string="" colspan="4"/>
+                    <footer>
+                        <button class="btn-primary" special="cancel" string="Close" colspan="2"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+</odoo>
